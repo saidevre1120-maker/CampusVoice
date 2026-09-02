@@ -289,7 +289,7 @@ if (error) {
     });
 
 
-    function trackComplaint() {
+    async function trackComplaint() {
 
         const id = document.getElementById("trackId").value.trim();
 
@@ -300,7 +300,34 @@ if (error) {
             return;
         }
 
-        const data = localStorage.getItem(id);
+        const { data, error } = await supabaseClient
+    .rpc("get_complaint", {
+        p_complaint_id: id
+    });
+
+if (error) {
+    console.error(error);
+    result.innerHTML = "❌ Error checking complaint.";
+    return;
+}
+
+if (data && data.length > 0) {
+    const complaint = data[0];
+
+    result.innerHTML = `
+        <div class="privacy">
+            <strong>Complaint ID:</strong> ${complaint.complaint_id}<br><br>
+            <strong>Category:</strong> ${complaint.category}<br>
+            <strong>Location:</strong> ${complaint.location}<br><br>
+            <strong>Status:</strong> ${complaint.status}<br>
+            <strong>Admin Response:</strong> ${complaint.admin_response || "No response yet"}
+        </div>
+    `;
+} else {
+    result.innerHTML =
+        "❌ Complaint not found. Please check your Complaint ID.";
+    return;
+}
 
         if (data) {
 
