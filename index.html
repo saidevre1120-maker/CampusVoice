@@ -133,6 +133,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -233,10 +234,17 @@
 
 
 <script>
+    const SUPABASE_URL = "https://etreifswdsgcvtowwcwv.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_jlCT7TmfGZns53t9NtkQMQ_E_n955It";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
     const complaintForm = document.getElementById("complaintForm");
 
-    complaintForm.addEventListener("submit", function(event) {
+    complaintForm.addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
@@ -256,10 +264,21 @@
             status: "Pending"
         };
 
-        localStorage.setItem(
-            complaintId,
-            JSON.stringify(complaintData)
-        );
+        const { error } = await supabaseClient
+    .from("complaints")
+    .insert({
+        complaint_id: complaintId,
+        category: category,
+        location: location,
+        complaint_text: complaint,
+        status: "Pending"
+    });
+
+if (error) {
+    alert("Complaint  are no Sumbit. Please try again.");
+    console.error(error);
+    return;
+}
 
         document.getElementById("complaintId").textContent = complaintId;
 
