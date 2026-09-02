@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusVoice</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 30px;
+        }
+
+        header p {
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-bottom: 18px;
+            color: #1e3a8a;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            background: #1e3a8a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #172d6b;
+        }
+
+        .privacy {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .result {
+            display: none;
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .complaint-id {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px auto;
+                padding: 12px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>CampusVoice</h1>
+    <p>Speak Freely. Improve Your Campus.</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>📝 Submit Anonymous Complaint</h2>
+
+        <div class="privacy">
+            🔒 <strong>Your Privacy Matters</strong><br>
+            Your name and personal identity will not be displayed with your complaint.
+            You will receive a unique Complaint ID to track your complaint.
+        </div>
+
+        <form id="complaintForm">
+
+            <label for="category">Complaint Category</label>
+
+            <select id="category" required>
+                <option value="">Select Category</option>
+                <option>Classroom</option>
+                <option>Faculty</option>
+                <option>Laboratory</option>
+                <option>Library</option>
+                <option>Computer / Internet</option>
+                <option>Cleanliness</option>
+                <option>Infrastructure</option>
+                <option>Other</option>
+            </select>
+
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                placeholder="Example: Room 204"
+                required
+            >
+
+            <label for="complaint">Complaint</label>
+
+            <textarea
+                id="complaint"
+                placeholder="Describe your complaint..."
+                required
+            ></textarea>
+
+            <button type="submit">Submit Complaint</button>
+
+        </form>
+
+        <div class="result" id="result">
+
+            ✅ Complaint submitted successfully!
+
+            <p>Your Complaint ID is:</p>
+
+            <div class="complaint-id" id="complaintId"></div>
+
+            <p style="margin-top:10px;">
+                Please save this ID to check your complaint status.
+            </p>
+
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <h2>🔎 Track Complaint</h2>
+
+        <label for="trackId">Complaint ID</label>
+
+        <input
+            type="text"
+            id="trackId"
+            placeholder="Example: CMP-12345"
+        >
+
+        <button onclick="trackComplaint()">
+            Track Complaint
+        </button>
+
+        <div id="trackResult" style="margin-top:20px;"></div>
+
+    </div>
+
+</div>
+
+<footer>
+    CampusVoice © 2026 | Anonymous College Complaint System
+</footer>
+
+
+<script>
+
+    const complaintForm = document.getElementById("complaintForm");
+
+    complaintForm.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const category = document.getElementById("category").value;
+        const location = document.getElementById("location").value;
+        const complaint = document.getElementById("complaint").value;
+
+        const randomNumber = Math.floor(10000 + Math.random() * 90000);
+
+        const complaintId = "CMP-" + randomNumber;
+
+        const complaintData = {
+            complaintId: complaintId,
+            category: category,
+            location: location,
+            complaint: complaint,
+            status: "Pending"
+        };
+
+        localStorage.setItem(
+            complaintId,
+            JSON.stringify(complaintData)
+        );
+
+        document.getElementById("complaintId").textContent = complaintId;
+
+        document.getElementById("result").style.display = "block";
+
+        complaintForm.reset();
+
+    });
+
+
+    function trackComplaint() {
+
+        const id = document.getElementById("trackId").value.trim();
+
+        const result = document.getElementById("trackResult");
+
+        if (id === "") {
+            result.innerHTML = "⚠️ Please enter a Complaint ID.";
+            return;
+        }
+
+        const data = localStorage.getItem(id);
+
+        if (data) {
+
+            const complaint = JSON.parse(data);
+
+            result.innerHTML = `
+                <div class="privacy">
+                    <strong>Complaint ID:</strong> ${complaint.complaintId}<br><br>
+
+                    <strong>Category:</strong> ${complaint.category}<br>
+
+                    <strong>Location:</strong> ${complaint.location}<br><br>
+
+                    <strong>Status:</strong> ${complaint.status}
+                </div>
+            `;
+
+        } else {
+
+            result.innerHTML =
+                "❌ Complaint not found. Please check your Complaint ID.";
+
+        }
+    }
+
+</script>
+
+</body>
+</html>
