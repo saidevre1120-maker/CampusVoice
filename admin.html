@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>CampusVoice Admin</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #123c69;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .complaint {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .complaint h3 {
+            margin-top: 0;
+            color: #123c69;
+        }
+
+        select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #123c69;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0b2d4d;
+        }
+
+        #loginBox {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="loginBox">
+
+    <h1>Admin Login</h1>
+
+    <input type="email" id="email" placeholder="Admin Email">
+
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="adminLogin()">Login</button>
+
+    <p id="loginMessage"></p>
+
+</div>
+
+
+<div id="dashboard">
+
+    <div class="container">
+
+        <h1>CampusVoice Admin Dashboard</h1>
+
+        <button onclick="loadComplaints()">Refresh Complaints</button>
+
+        <div id="complaintsList"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL = "https://etreifswdsgcvtowwcwv.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_jlCT7TmfGZns53t9NtkQMQ_E_n955It";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// ADMIN LOGIN
+
+async function adminLogin() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("loginMessage");
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+
+        message.innerText = "❌ Login failed: " + error.message;
+
+        return;
+    }
+
+    message.innerText = "✅ Login successful!";
+
+    document.getElementById("loginBox").style.display = "none";
+
+    document.getElementById("dashboard").style.display = "block";
+
+    loadComplaints();
+}
+
+
+// LOAD COMPLAINTS
+
+async function loadComplaints() {
+
+    const { data, error } = await supabaseClient
+        .from("complaints")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    const list = document.getElementById("complaintsList");
+
+    if (error) {
+
+        list.innerHTML =
+            "❌ Error loading complaints: " + error.message;
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+
+        list.innerHTML = "<p>No complaints found.</p>";
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    data.forEach(complaint => {
+
+        list.innerHTML += `
+
+        <div class="complaint">
+
+            <h3>Complaint ID: ${complaint.complaint_id}</h3>
+
+            <p>
+                <strong>Category:</strong>
+                ${complaint.category}
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                ${complaint.location || "Not provided"}
+            </p>
+
+            <p>
+                <strong>Complaint:</strong><br>
+                ${complaint.complaint_text}
+            </p>
+
+            <label>Status</label>
+
+            <select id="status-${complaint.id}">
+
+                <option value="Pending"
+                    ${complaint.status === "Pending" ? "selected" : ""}>
+                    Pending
+                </option>
+
+                <option value="In Progress"
+                    ${complaint.status === "In Progress" ? "selected" : ""}>
+                    In Progress
+                </option>
+
+                <option value="Resolved"
+                    ${complaint.status === "Resolved" ? "selected" : ""}>
+                    Resolved
+                </option>
+
+            </select>
+
+
+            <label>Admin Response</label>
+
+            <textarea
+                id="response-${complaint.id}"
+                placeholder="Write response..."
+            >${complaint.admin_response || ""}</textarea>
+
+
+            <button onclick="updateComplaint(${complaint.id})">
+                Update Complaint
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+
+// UPDATE COMPLAINT
+
+async function updateComplaint(id) {
+
+    const status =
+        document.getElementById("status-" + id).value;
+
+    const response =
+        document.getElementById("response-" + id).value;
+
+
+    const { error } = await supabaseClient
+        .from("complaints")
+        .update({
+            status: status,
+            admin_response: response
+        })
+        .eq("id", id);
+
+
+    if (error) {
+
+        alert("❌ Update failed: " + error.message);
+
+        return;
+    }
+
+
+    alert("✅ Complaint updated successfully!");
+
+    loadComplaints();
+}
+
+</script>
+
+</body>
+</html>
