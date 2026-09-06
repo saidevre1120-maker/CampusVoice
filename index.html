@@ -139,7 +139,11 @@
 <body>
 
 <header>
-    <div id="loginBox" style="max-width:500px; margin:30px auto; padding:25px; background:white; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,0.08);">
+     <h1>CampusVoice</h1>
+    <p>Speak Freely. Improve Your Campus.</p>
+</header>
+   <div id="loginBox" style="max-width:500px; margin:30px auto; padding:25px; background:white; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,0.08);">
+
     <h2>🎓 Student Login</h2>
 
     <input type="email" id="loginEmail" placeholder="Email">
@@ -155,10 +159,16 @@
     <p>Don't have an account?</p>
 
     <button onclick="studentSignup()">Create Account</button>
+
+    <hr style="margin:20px 0;">
+
+    <p>Are you an Admin?</p>
+
+    <button onclick="window.location.href='admin.html'">
+        🛡️ Admin Login
+    </button>
+
 </div>
-    <h1>CampusVoice</h1>
-    <p>Speak Freely. Improve Your Campus.</p>
-</header>
 
 <div id="appContent" style="display:none;">
     <div class="container">
@@ -421,24 +431,4 @@ if (data && data.length > 0) {
     }
 
 </script>
-
-</body>
-<div id="loginBox">
-    <h1>CampusVoice</h1>
-    <p>Student Login</p>
-
-    <input type="email" id="loginEmail" placeholder="Email">
-
-    <input type="password" id="loginPassword" placeholder="Password">
-
-    <button onclick="studentLogin()">Login</button>
-
-    <p id="loginMessage"></p>
-
-    <hr>
-
-    <p>Don't have an account?</p>
-
-    <button onclick="studentSignup()">Create Account</button>
-</div>    
 </html>
