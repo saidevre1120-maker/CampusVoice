@@ -275,7 +275,7 @@ const supabaseClient = supabase.createClient(
     });
 
 if (error) {
-    alert("Complaint  are no Sumbit. Please try again.");
+    alert("Complaint submit nahi hui: " + error.message);
     console.error(error);
     return;
 }
